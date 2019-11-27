@@ -51,10 +51,13 @@ using namespace std;
 #define FMI_INTEGER_SENSORVIEW_IN_BASELO_IDX 0
 #define FMI_INTEGER_SENSORVIEW_IN_BASEHI_IDX 1
 #define FMI_INTEGER_SENSORVIEW_IN_SIZE_IDX 2
-#define FMI_INTEGER_TRAFFICUPDATE_OUT_BASELO_IDX 3
-#define FMI_INTEGER_TRAFFICUPDATE_OUT_BASEHI_IDX 4
-#define FMI_INTEGER_TRAFFICUPDATE_OUT_SIZE_IDX 5
-#define FMI_INTEGER_COUNT_IDX 6
+#define FMI_INTEGER_TRAFFICCOMMAND_IN_BASELO_IDX 3
+#define FMI_INTEGER_TRAFFICCOMMAND_IN_BASEHI_IDX 4
+#define FMI_INTEGER_TRAFFICCOMMAND_IN_SIZE_IDX 5
+#define FMI_INTEGER_TRAFFICUPDATE_OUT_BASELO_IDX 6
+#define FMI_INTEGER_TRAFFICUPDATE_OUT_BASEHI_IDX 7
+#define FMI_INTEGER_TRAFFICUPDATE_OUT_SIZE_IDX 8
+#define FMI_INTEGER_COUNT_IDX 9
 #define FMI_INTEGER_LAST_IDX FMI_INTEGER_COUNT_IDX
 #define FMI_INTEGER_VARS (FMI_INTEGER_LAST_IDX+1)
 
@@ -77,6 +80,7 @@ using namespace std;
 #undef max
 #include "osi_sensorview.pb.h"
 #include "osi_trafficupdate.pb.h"
+#include "osi_trafficcommand.pb.h"
 
 /* FMU Class */
 class COSMPTrafficAgent {
@@ -212,10 +216,11 @@ protected:
 
     
     /* Protocol Buffer Accessors */
-    bool get_fmi_sensor_view_config(osi3::SensorViewConfiguration& data);
-    void set_fmi_sensor_view_config_request(const osi3::SensorViewConfiguration& data);
-    void reset_fmi_sensor_view_config_request();
+    //bool get_fmi_sensor_view_config(osi3::SensorViewConfiguration& data);
+    //void set_fmi_sensor_view_config_request(const osi3::SensorViewConfiguration& data);
+    //void reset_fmi_sensor_view_config_request();
     bool get_fmi_sensor_view_in(osi3::SensorView& data);
+    bool get_fmi_traffic_command_in(osi3::TrafficCommand& data);
     void set_fmi_traffic_update_out(const osi3::TrafficUpdate& data);
     void reset_fmi_traffic_update_out();
 

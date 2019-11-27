@@ -120,6 +120,18 @@ bool COSMPTrafficAgent::get_fmi_sensor_view_in(osi3::SensorView& data)
     }
 }
 
+bool COSMPTrafficAgent::get_fmi_traffic_command_in(osi3::TrafficCommand& data)
+{
+    if (integer_vars[FMI_INTEGER_TRAFFICCOMMAND_IN_SIZE_IDX] > 0) {
+        void* buffer = decode_integer_to_pointer(integer_vars[FMI_INTEGER_TRAFFICCOMMAND_IN_BASEHI_IDX],integer_vars[FMI_INTEGER_TRAFFICCOMMAND_IN_BASELO_IDX]);
+        normal_log("OSMP","Got %08X %08X, reading from %p ...",integer_vars[FMI_INTEGER_TRAFFICCOMMAND_IN_BASEHI_IDX],integer_vars[FMI_INTEGER_TRAFFICCOMMAND_IN_BASELO_IDX],buffer);
+        data.ParseFromArray(buffer,integer_vars[FMI_INTEGER_TRAFFICCOMMAND_IN_SIZE_IDX]);
+        return true;
+    } else {
+        return false;
+    }
+}
+
 void COSMPTrafficAgent::set_fmi_traffic_update_out(const osi3::TrafficUpdate& data)
 {
     data.SerializeToString(&currentOutputBuffer);
