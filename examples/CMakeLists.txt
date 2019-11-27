@@ -18,6 +18,8 @@ endif()
 
 add_subdirectory( open-simulation-interface )
 include_directories( includes )
-add_subdirectory( OSMPDummySensor )
-add_subdirectory( OSMPDummySource )
-add_subdirectory( OSMPCNetworkProxy )
+#add_subdirectory( OSMPDummySensor )
+#add_subdirectory( OSMPDummySource )
+#add_subdirectory( OSMPCNetworkProxy )
+add_subdirectory( OSMPTrafficAgent )
+
