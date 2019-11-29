@@ -82,6 +82,8 @@ using namespace std;
 #include "osi_trafficupdate.pb.h"
 #include "osi_trafficcommand.pb.h"
 
+#include "TrajectoryAgent.h"
+
 /* FMU Class */
 class COSMPTrafficAgent {
 public:
@@ -205,6 +207,8 @@ protected:
     string lastOutputBuffer;
     string currentConfigRequestBuffer;
     string lastConfigRequestBuffer;
+
+    TrajectoryAgent agentModel;
 
     /* Simple Accessors */
     fmi2Boolean fmi_valid() { return boolean_vars[FMI_BOOLEAN_VALID_IDX]; }

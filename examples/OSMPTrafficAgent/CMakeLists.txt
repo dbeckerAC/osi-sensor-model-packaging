@@ -19,7 +19,7 @@ string(MD5 FMUGUID modelDescription.in.xml)
 configure_file(modelDescription.in.xml modelDescription.xml @ONLY)
 
 find_package(Protobuf 2.6.1 REQUIRED)
-add_library(OSMPTrafficAgent SHARED OSMPTrafficAgent.cpp)
+add_library(OSMPTrafficAgent SHARED OSMPTrafficAgent.cpp TrajectoryAgent.cpp)
 set_target_properties(OSMPTrafficAgent PROPERTIES PREFIX "")
 target_compile_definitions(OSMPTrafficAgent PRIVATE "FMU_SHARED_OBJECT")
 target_compile_definitions(OSMPTrafficAgent PRIVATE "FMU_GUID=\"${FMUGUID}\"")
@@ -65,6 +65,8 @@ add_custom_command(TARGET OSMPTrafficAgent
 	COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_CURRENT_BINARY_DIR}/buildfmu/sources"
 	COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_CURRENT_BINARY_DIR}/buildfmu/binaries/${FMI_BINARIES_PLATFORM}"
 	COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_BINARY_DIR}/modelDescription.xml" "${CMAKE_CURRENT_BINARY_DIR}/buildfmu"
+	COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/TrajectoryAgent.cpp" "${CMAKE_CURRENT_BINARY_DIR}/buildfmu/sources/"
+	COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/TrajectoryAgent.h" "${CMAKE_CURRENT_BINARY_DIR}/buildfmu/sources/"
 	COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/OSMPTrafficAgent.cpp" "${CMAKE_CURRENT_BINARY_DIR}/buildfmu/sources/"
 	COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/OSMPTrafficAgent.h" "${CMAKE_CURRENT_BINARY_DIR}/buildfmu/sources/"
 	COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:OSMPTrafficAgent> $<$<PLATFORM_ID:Windows>:$<$<CONFIG:Debug>:$<TARGET_PDB_FILE:OSMPTrafficAgent>>> "${CMAKE_CURRENT_BINARY_DIR}/buildfmu/binaries/${FMI_BINARIES_PLATFORM}"

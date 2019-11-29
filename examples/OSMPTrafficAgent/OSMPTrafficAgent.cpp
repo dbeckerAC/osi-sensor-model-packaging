@@ -230,11 +230,28 @@ fmi2Status COSMPTrafficAgent::doCalc(fmi2Real currentCommunicationPoint, fmi2Rea
 {
     DEBUGBREAK();
 
-    osi3::SensorView currentIn;
+    osi3::SensorView currentViewIn;
+    osi3::TrafficCommand currentCommandIn;
     osi3::TrafficUpdate currentOut;
     double time = currentCommunicationPoint+communicationStepSize;
-    normal_log("OSI","Calculating Sensor at %f for %f (step size %f)",currentCommunicationPoint,time,communicationStepSize);
-    if (get_fmi_sensor_view_in(currentIn)) {
+    normal_log("OSI","Calculating Trajectory Agent at %f for %f (step size %f)",currentCommunicationPoint,time,communicationStepSize);
+
+    if (!get_fmi_sensor_view_in(currentViewIn)) {
+        normal_log("OSI","No valid sensor view input, therefore providing no valid output.");
+        reset_fmi_traffic_update_out();
+        set_fmi_valid(false);
+        set_fmi_count(0);
+        return fmi2OK;
+    }
+    
+    if (!get_fmi_traffic_command_in(currentCommandIn)) {
+        normal_log("OSI","No valid command input, therefore providing no valid output.");
+        reset_fmi_traffic_update_out();
+        set_fmi_valid(false);
+        set_fmi_count(0);
+        return fmi2OK;
+    }
+    
     // TODO: do calculation here!
     /*
     * Todos: 
@@ -260,12 +277,14 @@ fmi2Status COSMPTrafficAgent::doCalc(fmi2Real currentCommunicationPoint, fmi2Rea
         normal_log("OSI","Current Ego Position: %f,%f,%f", ego_x, ego_y, ego_z);*/
 
         /* Clear Output */
-        currentOut.Clear();
-        currentOut.mutable_version()->CopyFrom(osi3::InterfaceVersion::descriptor()->file()->options().GetExtension(osi3::current_interface_version));
-        /* Adjust Timestamps and Ids */
-        currentOut.mutable_timestamp()->set_seconds((long long int)floor(time));
-        currentOut.mutable_timestamp()->set_nanos((int)((time - floor(time))*1000000000.0));
-        
+    currentOut.Clear();
+    currentOut.mutable_version()->CopyFrom(osi3::InterfaceVersion::descriptor()->file()->options().GetExtension(osi3::current_interface_version));
+    /* Adjust Timestamps and Ids */
+    currentOut.mutable_timestamp()->set_seconds((long long int)floor(time));
+    currentOut.mutable_timestamp()->set_nanos((int)((time - floor(time))*1000000000.0));
+    
+    agentModel.step(time, currentViewIn, currentCommandIn, currentOut);
+    
         /*int i=0;
         double actual_range = fmi_nominal_range()*1.1;
         for_each(currentIn.global_ground_truth().moving_object().begin(),currentIn.global_ground_truth().moving_object().end(),
@@ -312,17 +331,11 @@ fmi2Status COSMPTrafficAgent::doCalc(fmi2Real currentCommunicationPoint, fmi2Rea
             });
         normal_log("OSI","Mapped %d vehicles to output", i);*/
         /* Serialize */
-        set_fmi_traffic_update_out(currentOut);
-        set_fmi_valid(true);
-        //set_fmi_count(currentOut.moving_object_size());
-        set_fmi_count(1); // correct?
-    } else {
-        /* We have no valid input, so no valid output */
-        normal_log("OSI","No valid input, therefore providing no valid output.");
-        reset_fmi_traffic_update_out();
-        set_fmi_valid(false);
-        set_fmi_count(0);
-    }
+    set_fmi_traffic_update_out(currentOut);
+    set_fmi_valid(true);
+    //set_fmi_count(currentOut.moving_object_size());
+    set_fmi_count(1); // correct?
+ 
     return fmi2OK;
 }
 
