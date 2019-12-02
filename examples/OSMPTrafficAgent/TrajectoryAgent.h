@@ -11,6 +11,12 @@
 #include "osi_trafficupdate.pb.h"
 #include "osi_sensorview.pb.h"
 
+struct Pose {
+    double x;
+    double y;
+    double yaw;
+};
+
 class TrajectoryAgent {
 public:
     TrajectoryAgent() {}
@@ -23,6 +29,7 @@ public:
 private:
     bool trajSet;
     osi3::TrajectoryCommand traj;
+    Pose pose;
 
-    int getTrajPoint(double time, osi3::TrajectoryCommand &trajectory, osi3::TrafficUpdate &out);
+    int getTrajPoint(double time, osi3::TrafficUpdate &out);
 };
