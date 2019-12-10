@@ -23,10 +23,13 @@ int TrajectoryAgent::init()
 
 int TrajectoryAgent::step(double time, osi3::SensorView &sensorViewData, osi3::TrafficCommand &commandData, osi3::TrafficUpdate &out)
 {
-    if(commandData.receive_new_command())
+    for (int i = 0; i < commandData.action_size(); i++)
     {
-        traj.CopyFrom(commandData.trajectory_command());
-        trajSet = true;
+        if(commandData.action(i).has_trajectory_action())
+        {
+            traj.CopyFrom(commandData.action(i).trajectory_action());
+            trajSet = true;
+        }
     }
     return getTrajPoint(time, out);
     
@@ -46,7 +49,7 @@ int TrajectoryAgent::getTrajPoint(double time, osi3::TrafficUpdate &out)
         //interpolate at current time step
         int i;
         double t1;
-        osi3::TrajectoryPoint *tmp;
+        osi3::StatePoint *tmp;
         for (i = 0; i < traj.trajectory_point_size(); i++)
         {
             tmp = traj.mutable_trajectory_point(i);
@@ -58,23 +61,23 @@ int TrajectoryAgent::getTrajPoint(double time, osi3::TrafficUpdate &out)
         if (i+1 == traj.trajectory_point_size())
         {
             // when trajectory has ended, always set pose to last traj. point
-            pose.x = tmp->base_moving().position().x();
-            pose.y = tmp->base_moving().position().y();
+            pose.x = tmp->state().position().x();
+            pose.y = tmp->state().position().y();
             // take heading from traj. if not set, it is always zero (I assume)
-            pose.yaw = tmp->base_moving().orientation().yaw();
+            pose.yaw = tmp->state().orientation().yaw();
         }
         else
         {
             // linear interpolation between both neighboring 
             // traj. points (w.r.t. time)
-            osi3::TrajectoryPoint *tmp2; 
+            osi3::StatePoint *tmp2; 
             tmp2 = traj.mutable_trajectory_point(i+1);
             double t2 = tmp2->time_stamp().seconds() 
                       + tmp2->time_stamp().nanos() / 1000000000.0;
-            double x1 = tmp->base_moving().position().x();
-            double x2 = tmp2->base_moving().position().x();
-            double y1 = tmp->base_moving().position().y();
-            double y2 = tmp2->base_moving().position().y();
+            double x1 = tmp->state().position().x();
+            double x2 = tmp2->state().position().x();
+            double y1 = tmp->state().position().y();
+            double y2 = tmp2->state().position().y();
             double mx = (x2-x1) / (t2-t1);
             double my = (y2-y1) / (t2-t1);
             pose.x = mx * (time-t1) + x1;

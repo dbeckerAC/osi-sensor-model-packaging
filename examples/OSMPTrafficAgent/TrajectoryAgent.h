@@ -28,7 +28,7 @@ public:
 
 private:
     bool trajSet;
-    osi3::TrajectoryCommand traj;
+    osi3::TrajectoryAction traj;
     Pose pose;
 
     int getTrajPoint(double time, osi3::TrafficUpdate &out);
